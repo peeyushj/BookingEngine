@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'messages.html' %}
+<div class="container">
+    <div class="row">
+        <br />
+    </div>
+</div>
+<div class="panel panel-default" align="center">
+    <div class="panel-heading">
+        <h4>Users List</h4>
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Change Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                	{% for user in users %}
+                		<tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.table-responsive -->
+    </div>
+    <!-- /.panel-body -->
+</div>
+
+
+{% endblock %}

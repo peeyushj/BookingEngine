@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+{% include 'messages.html' %}
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Account Information</h3>
+    </div>
+</div>
+
+<div class="row">
+    <form role="form" method="post">
+        <div class="col-sm-12 col-lg-12 col-md-12">
+            <div class="table-responsive accountInfo">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>User Name</th>
+                            <td>{{ user.username }}</td>
+                            <th>Email</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>First Name: </th>
+                            <td><input class="form-control" name="first_name" value="{{ user_info.first_name }}" /></td>
+                            <th>Last Name</th>
+                            <td><input class="form-control" name="last_name" value="{{ user_info.last_name }}" /></td>
+                        </tr>
+                        <tr>
+                            <th>Role</th>
+                            <td>{{ user_detail.role }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-2 col-lg-2 col-md-2">
+                <fieldset>
+                    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Save" name="save_user_name">
+                </fieldset>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Change Password</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12 col-lg-12 col-md-12">
+        <form role="form" method="post">
+            <fieldset>
+                <div class="form-group col-sm-4">
+                    <input class="form-control" placeholder="Old Password" name="old_password" type="password">
+                </div>
+                <div class="form-group col-sm-4">
+                    <input class="form-control" placeholder="New Password" name="new_password" type="password">
+                </div>
+                <div class="form-group col-sm-4">
+                    <input class="form-control" placeholder="Confirm Password" name="confirm_password" type="password">
+                </div>
+                <div class="col-sm-2 col-lg-2 col-md-2">
+                    <input type="submit" class="btn btn-lg btn-primary btn-block" value="Change" name="change_password">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

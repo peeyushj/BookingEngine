@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<link href="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+<!-- DataTables Responsive CSS -->
+<link href="/static/bower_components/datatables-responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<script src="{% static "js/jquery-ui.min.js" %}"></script>
+
+<script type="text/javascript">
+
+	function validateCreateForm(argument) {
+		var formElements=argument.elements;
+		if(typeof formElements.broker_name =="undefined" || formElements.broker_name.value ==null || formElements.broker_name.value  =="" || formElements.broker_name.value =="0"){
+			alert("Please provide Unit Variant Name");
+			return false;	
+		};
+
+		return true;
+
+	}
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12" >
+        <h3 class="page-header">Add A Broker</h3>
+    </div>
+</div>
+
+{% include 'messages.html' %}
+<div class="row">
+    <div class="col-sm-12 col-lg-12 col-md-12" align="center">
+        <div class="table-responsive">
+            <div class="form-group">
+            	<form role="form" id="AddBrokerForm" method='POST' action='' class="form-horizontal">
+					{% csrf_token %}
+	            	<fieldset>
+	            		<div class="col-sm-6" style="position:relative;">
+							<input type="text" name="broker_name" placeholder="Broker Name" class="form-control input-md" />	
+						</div>
+
+						<div class="col-md-3 txtalcent">
+							<button type="submit" onclick="return validateCreateForm(this.form)" name="booking_engine_broker_create" class="btn btn-primary">Add A Broker</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- <h3 class="page-header">Buyer's List</h3> -->
+            <div class="panel panel-default">
+                <div class="panel-heading" align="center">
+                    Already Added Brokers
+                </div>
+                <div class="panel-body">
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="dataTables-brokers">
+                            <thead>
+                                <tr>
+                                    <th>Broker Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	{% for broker in brokers %}
+                                <tr>
+                                    <td>{{ broker.broker_name }}</td>
+                                    <td class="actionDeleteCol">
+                                    	<form role="form" action='' method="POST">
+								            {% csrf_token %}
+								            <div class="form-group input-group">
+											    <input class="btn btn-md btn-link btn-block" type="submit" name="booking_engine_broker_delete" value="Delete" />
+			                                	<input type="hidden" name="broker_id" value="{{ broker.broker_id }}" />
+								            </div>
+								        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<script src="/static/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+<script>
+$(document).ready(function() {
+    $('#dataTables-brokers').DataTable({
+            responsive: true
+    });
+});
+</script>
+
+{% endblock %}

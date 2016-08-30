@@ -1,0 +1,34 @@
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="http://www.commonfloor.com" target="_blank">
+                    <img class="headerLogo" src="/static/images/logo1.png" >
+                </a>
+                <a class="navbar-brand" href="/">Booking Engine CRM - <span style="color:f68121;">CommonFloor</span></a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li>
+                    <span style="color:white;">Welcome {{request.user.first_name}} {{request.user.last_name}} !!!</span>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user headerUl">
+                        <li><a href="/account_info"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="{% url 'django.contrib.auth.views.logout' %}?next=/login"><i class="fa fa-sign-out fa-fw"></i> Logout</a></li>
+                        <!-- <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a> -->
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>

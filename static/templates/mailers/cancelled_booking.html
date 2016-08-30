@@ -1,0 +1,22 @@
+{% extends "mailers/base_email.html" %}
+{% block mailer_content %}
+	Dear {{username}},
+		<br><br>
+		You have successfully cancelled you booking. <br /><br />
+		<b> Booking Id: </b>&nsbp;{{booking_id}}<br />
+
+		Your payment will be refunded back to your account in 7-10 days. 
+
+		</td>
+	</tr>
+	<tr>
+	    <td height="20">&nbsp;</td>
+	</tr>
+
+
+	<tr>
+		<td style="font-family:arial;font-size:12px;color:#5d5d5d;line-height:20px;padding:0 20px" align="center">
+			<a rel="nofollow" href="https://www.commonfloor.com/manage-property-bookings/booking" style="background-color:#ff8a00;color:#fff;display:inline-block;font-family:Arial;font-size:13px;min-height:30px;line-height:30px;min-width:54px;padding:0px 20px;text-align:center;text-decoration:none;white-space:nowrap" target="_blank">Checkout your Bookings</a>
+
+{% endblock %}
+		

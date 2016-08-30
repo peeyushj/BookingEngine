@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+<link href="/static/bower_components/datatables-responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<br>
+<script type="text/javascript">
+
+    $('body').on('focus',".datepicker_recurring_start", function(){
+        $(this).datepicker({
+            dateFormat:'yy-mm-dd'
+        });
+    });
+    
+    function validateCreateForm (argument) {
+        var formElements=argument.elements;
+
+        if(typeof formElements.price_sheet_name =="undefined" || formElements.price_sheet_name.value ==null || formElements.price_sheet_name.value  ==""){
+            alert("Please Enter Any Price Sheet Name");
+            return false;   
+        };
+
+        if(typeof formElements.price_sheet_description =="undefined" || formElements.price_sheet_description.value ==null || formElements.price_sheet_description.value  ==""){
+            alert("Please Enter Any Price Sheet Description");
+            return false;   
+        };
+
+        if(typeof formElements.price_sheet_date =="undefined" || formElements.price_sheet_date.value ==null || formElements.price_sheet_date.value  ==""){
+            alert("Please Enter Any Price Sheet Date");
+            return false;   
+        };
+
+        if(typeof formElements.is_active =="undefined" || formElements.is_active.value ==null || formElements.is_active.value  ==""){
+            alert("Please select any in-active value");
+            return false;   
+        };
+
+        return true;
+
+    }
+
+</script>
+
+{% include 'messages.html' %}
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Price Sheets For: {{project.project_name}}</h3>
+    </div>
+</div>
+
+<form role="form" action='' method="POST">
+    {% csrf_token %}
+    <div class="form-group input-group" style="float:right">
+        <a href="#"  id="linkCreatePriceSheet">Create a Price Sheet</a>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- <h3 class="page-header">Buyer's List</h3> -->
+            <div class="panel panel-default">
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="dataTables-pricing-structure">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Project Type</th>
+                                    <th>Tower</th>
+                                    <th>Unit Variant</th>
+                                    <th>Promoter</th>
+                                    <th>Arrange Date</th>
+                                    <th>isActive</th>
+                                    <!-- <th>isDefault</th> -->
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	{% for pricing_structure in pricing_structure_info %}
+                                <tr>
+                                    <td>{{ pricing_structure.name }}</td>
+                                    <td>{{ pricing_structure.description }}</td>
+                                    <td>
+                                        {% if not pricing_structure.project_type_name %}
+                                            All
+                                        {% else %}
+                                            {{pricing_structure.project_type_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not pricing_structure.tower_name %}
+                                            All
+                                        {% else %}
+                                            {{pricing_structure.tower_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not pricing_structure.unit_variant_name %}
+                                            All
+                                        {% else %}
+                                            {{pricing_structure.unit_variant_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not pricing_structure.broker_name %}
+                                            All
+                                        {% else %}
+                                            {{pricing_structure.broker_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ pricing_structure.as_of_date }}</td>
+                                    <td>{{ pricing_structure.is_active }}</td>
+                                    <!-- <td>{{ pricing_structure.is_default }}</td> -->
+                                    <td class="actionCol">
+                                        <form role="form" action='' method="POST">
+                                            {% csrf_token %}
+                                            <div class="form-group input-group">
+                                                <!-- <a href="#" id="linkMakeDefaultPriceSheet" data-price-sheet-id="{{pricing_structure.pricesheet_id}}" data-project-id="{{ pricing_structure.project_id }}">Make It Default</a>&nbsp;&nbsp; -->
+                                                <a href="/project_price_sheet_edit/{{ pricing_structure.pricesheet_id }}">Edit</a>&nbsp;&nbsp;
+                                                <a href="#" id="linkDeletePriceSheet" data-pricesheet-id="{{pricing_structure.pricesheet_id}}" data-pricesheet-is-default="{{ pricing_structure.is_default }}">Delete</a>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalCreatePriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 500px; margin-top:10px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalMakeDefaultPriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalDeletePriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <!-- DataTables JavaScript -->
+<script src="/static/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+<script>
+$(document).ready(function() {
+    $('#dataTables-pricing-structure').DataTable({
+            responsive: true
+    });
+});
+
+$('#linkCreatePriceSheet').click(function(){
+        $('#myModalCreatePriceSheet').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                            <span aria-hidden="true">&times;</span>\
+                    </button>\
+                    <h3 align="center">\
+                        Create a Price Sheet\
+                    </h3>\
+                    <form role="form" method="post" action="">\
+                        <fieldset>\
+                            <div class="table-responsive">\
+                                <table class="table">\
+                                        <tr>\
+                                            <th>Name</th>\
+                                            <td>\
+                                                <input class="form-control" name="price_sheet_name" type="price_sheet_name" placeholder="Enter Name">\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Description</th>\
+                                            <td>\
+                                                <textarea class="form-control" name="price_sheet_description" rows="3" placeholder="Enter Description"></textarea>\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Property Type </th>\
+                                            <td>\
+                                                <select class="form-control" name="price_sheet_property_type" type="price_sheet_property_type">\
+                                                    <option value="0">All</option>\
+                                                    {% for project_type in project_types %}\
+                                                        <option value="{{project_type.project_type_id}}">{{project_type.project_type_name}}</option>\
+                                                    {% endfor %}\
+                                                </select>\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Tower Name </th>\
+                                            <td>\
+                                                <select class="form-control" name="price_sheet_property_tower" type="price_sheet_property_tower">\
+                                                    <option value="0">All</option>\
+                                                    {% for tower in towers %}\
+                                                        <option value="{{tower.tower_id}}">{{tower.tower_name}}</option>\
+                                                    {% endfor %}\
+                                                </select>\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Unit Variant </th>\
+                                            <td>\
+                                                <select class="form-control" name="price_sheet_property_unit_variant" type="price_sheet_property_unit_variant">\
+                                                    <option value="0">All</option>\
+                                                    {% for unit_variant in unit_variants %}\
+                                                        <option value="{{unit_variant.unit_variant_id}}">{{unit_variant.unit_variant_name}}</option>\
+                                                    {% endfor %}\
+                                                </select>\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Promoter Name</th>\
+                                            <td>\
+                                                <select class="form-control" name="broker_name" type="broker_name">\
+                                                    <option value="0">All</option>\
+                                                    {% for broker in brokers %}\
+                                                        <option value="{{broker.broker_id}}">{{broker.broker_name}}</option>\
+                                                    {% endfor %}\
+                                                </select>\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>Date</th>\
+                                            <td>\
+                                                <input class="datepicker_recurring_start form-control" autocomplete="off" placeholder="Enter Date(YYYY-MM-DD)" name="price_sheet_date" id="">\
+                                            </td>\
+                                        </tr><tr>\
+                                            <th>is Active</th>\
+                                            <td>\
+                                                <label>\
+                                                    <input type="radio" name="is_active" id="is_active" value="1" checked=""> Yes\
+                                                </label>&nbsp;&nbsp;\
+                                                <label>\
+                                                    <input type="radio" name="is_active" id="is_active" value="0"> No\
+                                                </label>\
+                                            </td>\
+                                        </tr>\
+                                </table>\
+                            </div>\
+                            <div class="col-lg-4 col-lg-offset-4">\
+                                <input class="btn btn-lg btn-primary btn-block" type="submit" onclick="return validateCreateForm(this.form)" name="price_sheet_create" value="Create" />\
+                            </div>\
+                        </fieldset>\
+                    </form>';
+
+        $('.modal-body').html(html);
+});
+
+    $('.actionCol').find('#linkMakeDefaultPriceSheet').click(function(){
+        $('#myModalMakeDefaultPriceSheet').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to make this pricesheet as a Default?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="price_sheet_id" id="price_sheet_id" value="'+$(this).data('price-sheet-id')+'" />\
+                        <input type="hidden" name="project_id" id="project_id" value="'+$(this).data('project-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="make_it_default">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+
+        $('.modal-body').html(html);
+    });
+
+    $('.actionCol').find('#linkDeletePriceSheet').click(function(){
+        $('#myModalDeletePriceSheet').modal('show');
+
+        is_default = $(this).data('pricesheet-is-default');
+        var html = '';
+        if(is_default == 'False')
+        {
+            html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to delete this Price Sheet?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="price_sheet_id" id="price_sheet_id" value="'+$(this).data('pricesheet-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="pricing_structure_delete">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+        }
+        else
+        {
+            html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        You can not delete a default pricesheet. Please make some other pricesheet as a default to do this activity.\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                    </form></div>';
+        }
+
+        $('.modal-body').html(html);
+    });
+
+</script>
+
+{% endblock %}

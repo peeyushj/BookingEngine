@@ -1,0 +1,733 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <!-- <div class="col-lg-6">
+        <h3 class="page-header">Booking Information: {{booking_id}}</h3>
+    </div> -->
+    <div class="col-lg-12">
+        <h3 align="right">Booking Information: {{booking_id}} (ID)</h3>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<!-- <div class="row">
+    <div class="col-lg-12" align="center">
+        <span><b>Current Payment Status: </b>Status</span><br />
+        <a href="#" id="book_payment_structure">Book Payment Structure</a>
+    </div>
+</div> -->
+
+{% if booking_info %}
+    <div class="row">
+        <div class="col-lg-12" align="center">
+            <!-- <h3 class="page-header">Buyer's List</h3> -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Buyer's Detail
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <th style="float:right">Buyer Name: </th>
+                                        <td>{{ buyer_info.buyer_name }}</td>
+                                        <th style="float:right">Address: </th>
+                                        <td>{{ buyer_info.address_line_1 }}<br>{{ buyer_info.address_line_2 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="float:right">Buyer Email Address: </th>
+                                        <td>{{ buyer_info.email }}</td>
+                                        <th style="float:right">City: </th>
+                                        <td>{{ buyer_info.city }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="float:right">Buyer Phone No: </th>
+                                        <td>{{ buyer_info.phone }}</td>
+                                        <th style="float:right">State: </th>
+                                        <td>{{ buyer_info.state }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="float:right">PAN Number: </th>
+                                        <td>{{ buyer_info.pan_card_number }}</td>
+                                        <th style="float:right">Country: </th>
+                                        <td>{{ buyer_info.country }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="float:right">Buyer Type: </th>
+                                        <td>{{ buyer_info.buyer_type }}</td>
+                                        <th style="float:right">Pincode: </th>
+                                        <td>{{ buyer_info.pincode }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12" align="center">
+            <!-- <h3 class="page-header">Buyer's List</h3> -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Unit Detail
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        {% ifnotequal unit_extra_info None %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th style="float:right">Project Name: </th>
+                                            <td>{{ unit_extra_info.data.project_title }}</td>
+                                            <th style="float:right">Price Per sft: </th>
+                                            <td>{{ unit_extra_info.data.unit.per_sq_ft_price }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="float:right">Unit Number: </th>
+                                            <td>{{ unit_extra_info.data.unit.name }}</td>
+                                            <th style="float:right">Total Price: </th>
+                                            <td>Rs. {{total_sale_value}}
+                                            	<a href="#" id="myModalViewFullPriceSheet" style="float:right"> Price Sheet</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="float:right">Property Type: </th>
+                                            <td>{{ unit_extra_info.data.project_type }}</td>
+                                            <th style="float:right">Booking Amount: </th>
+                                            <td>
+                                            	Rs. {{ booking_amount }}
+                                            	<a href="#" id="myModalFullPaymentPlan" style="float:right"> Payment Plan</a>
+                                            </td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th style="float:right">Super Builtup Area: </th>
+                                            <td>{{ unit_extra_info.data.unit.super_built_up_area }} sqft</td>
+                                            <th style="float:right">Status: </th>
+                                            <td>{{ unit_extra_info.data.unit.status }}</td>
+                                        </tr>
+                                        <tr>
+                                        	<th style="float:right">Builtup Area: </th>
+                                            <td>{{ unit_extra_info.data.unit.built_up_area }} sqft</td>
+                                        	<th style="float:right">Floor Number: </th>
+                                            <td>{{ unit_extra_info.data.unit.floor_number }}</td>
+                                        </tr>
+                                        <tr>
+                                        	<th style="float:right">Carpet Area: </th>
+                                            <td>{{ unit_extra_info.data.unit.carpet_area }} sqft</td>
+                                            <th style="float:right">Locality: </th>
+                                            <td>{{ unit_extra_info.data.area_name }},{{ unit_extra_info.data.city }}</td>
+                                        </tr>
+                                        <tr>
+                                        	<th style="float:right">Builder Name: </th>
+                                            <td>{{ unit_extra_info.data.builder_name }}</td>
+                                            <th style="float:right"></th>
+                                            <td>
+                                            	<a href="#" id="myModalFullContacts" style="float:right">View Builder's Contacts</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div>
+                                There is no unit information available at the moment
+                            </div>
+                        {% endifnotequal %}
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12" align="center">
+            <!-- <h3 class="page-header">Buyer's List</h3> -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Booking History
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Old Status</th>
+                                        <th>New Status</th>
+                                        <th>Comments</th>
+                                        <th>Updated By</th>
+                                        <th>Update On</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                	{% for booking_history in booking_histories %}
+                                    <tr>
+                                        <td>{{ booking_history.old_status }}</td>
+                                        <td>{{ booking_history.new_status }}</td>
+                                        <td>{{ booking_history.comments }}</td>
+                                        <td>{{ booking_history.updated_by }}</td>
+                                        <td>{{ booking_history.updated_on }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12" align="center">
+            <!-- <h3 class="page-header">Buyer's List</h3> -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Payment History
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                            {% csrf_token %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Payment Id</th>
+                                                <th>Payment Status</th>
+                                                <th>IsActive</th>
+                                                <th>Update On</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        	{% for payment_history in payment_histories %}
+                                            <tr>
+                                                <td>{{ payment_history.payment_id }}</td>
+                                                <td>{{ payment_history.payment_status }}</td>
+                                                <td>
+                                                	{% if payment_history.is_active %}
+                                                		YES
+                                                	{% else %}
+                                                		NO
+                                                	{% endif %}
+                                                </td>
+                                                <td>{{ payment_history.updated_on }}</td>
+                                                <td class="editCol">
+                                                    {% if payment_history.is_active %}
+                                                        {% if forloop.counter == 1 %}
+                                                            <span>[</span>
+                                                            <button class="btn btn-link" name="check_payment_status" id="check_payment_status" data-transaction-id="{{payment_history.payment_id}}" data-payment-status="{{payment_history.payment_status}}">Check PayU Payment Status</button>
+                                                            {% ifequal payment_history.payment_status 'captured' %}
+                                                                <span>|</span>
+                                                                <button class="btn btn-link" name="refund" id="refund" data-mihpayid="{{payment_history.mihpayid}}" data-payment-id="{{payment_history.payment_id}}" data-booking-id="{{booking_id}}" data-payment-status="{{payment_history.payment_status}}" data-unit-id="{{ unit_extra_info.data.unit.id }}" data-buyer-id="{{ buyer_info.buyer_id }}">Refund</button>
+                                                            {% endifequal %}
+                                                            <span>]</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+                <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+{% else %}
+    <div align="center" style="padding-top:200px">
+        There is no booking information available at the moment.
+    </div>
+{% endif %}
+
+
+<div class="modal fade Contacts" id="myModalContacts" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+      	
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PriceSheet" id="myModalPriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalViewFullPaymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentStatus" id="myModalCheckPaymentStatus" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade Refund" id="myModalRefund" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $('.editCol').find('#check_payment_status').click(function(){
+        current_payment_status = $(this).data('payment-status');
+        transaction_id = $(this).data('transaction-id');
+        $.ajax({
+            url: "{% url 'check_payment_status' %}", 
+            //url: "http://stage.booking.commonfloor.com/unit_payment_plan/", 
+            type:'POST',
+            data:{
+                "transaction_id":transaction_id
+            },
+            success: function(result){
+                $('#myModalCheckPaymentStatus').modal('show');
+                result_json = JSON.parse(result);
+                //alert(result_json);
+                if(result_json['error'])
+                {
+                    var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                    <span aria-hidden="true">&times;</span>\
+                                </button><br>\
+                                <div align="center">\
+                                <span>\
+                                    '+ result_json['error'] +'\
+                                </span><br><br>\
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                                </div>';
+                    $('.modal-body').html(html);
+                }
+                else if(result_json['checked_status'] && (result_json['status']==1))
+                {
+                    var html = ''
+                    if(current_payment_status == result_json['checked_status'])
+                    {
+                        html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                    <span aria-hidden="true">&times;</span>\
+                                </button><br>\
+                                <div align="center">\
+                                <span>\
+                                    This payment\'s current payu status is already updated\
+                                </span><br><br>\
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                                </div>';
+                    }
+                    else
+                    {
+                        html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                    <span aria-hidden="true">&times;</span>\
+                                </button><br>\
+                                <div align="center">\
+                                <span>\
+                                    This payment\'s current payu status is \''+ result_json['checked_status'] +'\' and your status is \''+ current_payment_status +'\'. <br>\
+                                    Do you want to update payu status as a current status?\
+                                </span><br><br>\
+                                <form role="form" method="post" action="">\
+                                    <input type="hidden" name="payment_id" id="payment_id" value="'+ transaction_id +'" />\
+                                    <input type="hidden" name="change_payment_status" id="change_payment_status" value="'+result_json['checked_status']+'" />\
+                                    <input type="hidden" name="booking_id" id="booking_id" value="{{booking_id}}" />\
+                                    <button class="btn btn-default" type="submit" name="payment_status_update">Update</button>\
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>\
+                                </form>\
+                                </div>';
+
+                        location.reload();
+                    }
+                    $('.modal-body').html(html);
+                }
+                // $('#myModalCheckPaymentStatus').modal('show');
+
+                // var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                //                 <span aria-hidden="true">&times;</span>\
+                //             </button><br>\
+                //             <div align="center">\
+                //             <span>\
+                //                 Are you sure you want to update this payment status?\
+                //             </span><br><br>\
+                //             <form role="form" method="post" action="">\
+                //                 <input type="hidden" name="payment_plan_milestone_id" id="payment_plan_milestone_id" value="'+$(this).data('transaction-id')+'" />\
+                //                 <button class="btn btn-default" type="submit" name="payment_plan_milestone_delete">Yes</button>\
+                //                 <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                //             </form></div>';
+
+                // $('.modal-body').html(html);
+            },
+            error: function(result){
+                console.log(result);
+                alert('in error');
+            }
+        });
+    });
+
+    $('.editCol').find('#refund').click(function(){
+        current_payment_status = $(this).data('payment-status');
+        mihpayid = $(this).data('mihpayid');
+        payment_id = $(this).data('payment-id');
+        booking_id = $(this).data('booking-id');
+        unit_id = $(this).data('unit-id');
+        buyer_id = $(this).data('buyer-id');
+        $.ajax({
+            url: "{% url 'refund_payment' %}", 
+            //url: "http://stage.booking.commonfloor.com/unit_payment_plan/", 
+            type:'POST',
+            data:{
+                "mihpayid":mihpayid,
+                "amount":{{ booking_amount }},
+                "payment_id":payment_id,
+                "booking_id":booking_id,
+                "unit_id":unit_id,
+                "buyer_id":buyer_id
+            },
+            success: function(result){
+                console.log(result);
+                //alert('in success');
+                $('#myModalRefund').modal('show');
+                result_json = JSON.parse(result);
+                if(result_json['status']==0)
+                {
+                    var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                    <span aria-hidden="true">&times;</span>\
+                                </button><br>\
+                                <div align="center">\
+                                <span>\
+                                    '+ result_json['error'] +'\
+                                </span><br><br>\
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                                </div>';
+                    $('.modal-body').html(html);
+                }
+                else if(result_json['status']==1)
+                {
+                    var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                                    <span aria-hidden="true">&times;</span>\
+                                </button><br>\
+                                <div align="center">\
+                                <span>\
+                                    You have successfully initiated the refund process for this payment.\
+                                </span><br><br>\
+                                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                                </div>';
+                    $('.modal-body').html(html);
+                    location.reload();
+                }
+            },
+            error: function(result){
+                console.log(result);
+                alert('Error: Payment has not been updated because of the current error => '+result);
+            }
+        });
+    });
+
+    $('#book_payment_structure').click(function(){
+        $.ajax({
+            url: "{% url 'book_payment_structure' %}", 
+            //url: "http://stage.booking.commonfloor.com/unit_payment_plan/", 
+            type: "POST",
+            data:{
+                "booking_id":"{{booking_id}}",
+                "user":"{{TOKENIZER_USER_ID}}",
+                "token":"{{TOKENIZER_TOKEN}}"
+            },
+            success: function(result){
+                console.log(result);
+            },
+            error: function(result){
+                console.log(result);
+                alert('in error');
+            }
+        });
+    });
+
+
+
+
+    
+    $('#myModalFullContacts').click(function(){
+        $('#myModalContacts').modal('show');
+
+        var html='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                    <span aria-hidden="true">&times;</span>\
+                </button>\
+                <h3>Builder\'s Contact</h3><hr>\
+                <div class="table-responsive">\
+                    <table class="table">\
+                        <thead>\
+                            <tr>\
+                                <th>Designation</th>\
+                                <th>Name</th>\
+                                <th>Phone</th>\
+                                <th>Email</th>\
+                                <th></th>\
+                            </tr>\
+                        </thead>\
+                        <tbody>\
+                            {% for project_contact in project_contact_info %}\
+                            <tr>\
+                                <th>{{ project_contact.contact_designation }}</th>\
+                                <td>{{ project_contact.contact_name }}</td>\
+                                <td>{{ project_contact.contact_phone }}</td>\
+                                <td>{{ project_contact.contact_email }}</td>\
+                                <td>\
+                                    {% if project_contact.is_primary %}\
+                                        Primary\
+                                    {% else %}\
+                                        Secondary\
+                                    {% endif %}\
+                                </td>\
+                            </tr>\
+                            {% endfor %}\
+                        </tbody>\
+                    </table>\
+                </div>';
+        $('.modal-body').html(html);
+    });
+
+    
+
+    $('#myModalFullPaymentPlan').click(function(){
+        $('#myModalViewFullPaymentPlan').modal('show');
+        $.ajax({
+            url: "{% url 'booked_unit_payment_plan' %}", 
+            //url: "http://stage.booking.commonfloor.com/unit_payment_plan/", 
+            type:'POST',
+            data:{
+                "booking_id":"{{booking_id}}",
+                "user":"{{TOKENIZER_USER_ID}}",
+                "token":"{{TOKENIZER_TOKEN}}"
+            },
+            success: function(result){
+                console.log(result);
+                result_json = JSON.parse(result);
+                var milestone_entry = "";
+                for(milestone_no in result_json.milestones){
+                    milestone_entry += "<tr>";
+                    milestone_entry +=  "<td>"+result_json.milestones[milestone_no].milestone_date+"</td>"; 
+                    milestone_entry +=  "<td>"+ result_json.milestones[milestone_no].milestone +"</td>"; 
+                    milestone_entry +=  "<td>"+ result_json.milestones[milestone_no].entered_value + "</td>"; 
+                    
+                    milestone_entry +=  "<td>"+ result_json.milestones[milestone_no].cost_type +"</td>";
+                    milestone_entry +=  "<td> Rs. "+result_json.milestones[milestone_no].amount+"</td>";  
+                    milestone_entry += "</tr>";         
+                };
+                var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                            <span aria-hidden="true">&times;</span>\
+                        </button>\
+                        <h3 align="center">\
+                        Payment Plan\
+                        </h3>\
+                        <div class="table-responsive">\
+                            <table class="table">\
+                                <tr>\
+                                    <th style="float:right">\
+                                        Project Name:\
+                                    </th>\
+                                    <td>\
+                                        {{ unit_extra_info.data.project_title }}\
+                                    </td>\
+                                    <th style="float:right">\
+                                        Builders Name:\
+                                    </th>\
+                                    <td>\
+                                        {{ unit_extra_info.data.builder_name }}\
+                                    </td>\
+                                </tr>\
+                                <tr>\
+                                    <th style="float:right">\
+                                        Type:\
+                                    </th>\
+                                    <td>\
+                                        {{ unit_extra_info.data.project_type }}\
+                                    </td>\
+                                    <th style="float:right">\
+                                        Area:\
+                                    </th>\
+                                    <td>\
+                                        {{ unit_extra_info.data.area_name }},{{ unit_extra_info.data.city }}\
+                                    </td>\
+                                </tr>\
+                            </table>\
+                        </div>\
+                        <div class="table-responsive">\
+                            <table class="table table-striped table-bordered table-hover">\
+                                <thead>\
+                                    <tr>\
+                                        <th>Due Date</th>\
+                                        <th>Milestone</th>\
+                                        <th>Value</th>\
+                                        <th>Cost Type</th>\
+                                        <th>Sub-Amount</th>\
+                                    </tr>\
+                                </thead>\
+                                <tbody>'+ 
+                                milestone_entry
+                                +'</tbody>\
+                            </table>\
+                            <div class="col-lg-4 col-lg-offset-8">\
+                                <table class="table">\
+                                    <tr>\
+                                        <th>Total Sale Value</th>\
+                                        <td> Rs. '+ result_json.total_sale_value +'</td>\
+                                    </tr>\
+                                </table>\
+                            </div>\
+                        </div>\
+                        ';
+                $('.modal-body').html(html);
+            },
+            error:function(result){
+                var html = 'There is no payment plan entry exist for this booking'
+                $('.modal-body').html(html);
+
+            }
+        });
+    });
+
+    $('#myModalViewFullPriceSheet').click(function(){
+        $('#myModalPriceSheet').modal('show');
+        $.ajax({
+            url: "{% url 'booked_unit_price_sheet' %}",
+            //url: "http://stage.booking.commonfloor.com/unit_price_sheet/", 
+            type:'POST', 
+            data:{
+                "booking_id":"{{booking_id}}",
+                "user":"{{TOKENIZER_USER_ID}}",
+                "token":"{{TOKENIZER_TOKEN}}"
+            },
+            success: function(result){
+                result_json = JSON.parse(result);
+                var component_entry = "";
+                for(component_no in result_json.components){
+                    component_entry += "<tr>";
+                    component_entry +=  "<td>"+result_json.components[component_no].component_price_type+"</td>"; 
+                    component_entry +=  "<td>"+ result_json.components[component_no].component_price_sub_type +"</td>"; 
+                    component_entry += "<td>"+ result_json.components[component_no].entered_value + "</td>";
+                    component_entry +=  "<td>"+ result_json.components[component_no].cost_type +"</td>";
+                    component_entry +=  "<td> Rs. "+result_json.components[component_no].amount+"</td>";  
+                    component_entry += "</tr>";         
+                };
+                var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                            <span aria-hidden="true">&times;</span>\
+                        </button>\
+                        <h3 align="center">\
+                        Price Sheet\
+                        </h3>\
+                        <div class="table-responsive">\
+                            <table class="table">\
+                                <tr>\
+                                    <th style="float:right">\
+                                        Project Name:\
+                                    </th>\
+                                    <td>\
+                                        {{unit_extra_info.data.project_title}}\
+                                    </td>\
+                                    <th style="float:right">\
+                                        Builders Name:\
+                                    </th>\
+                                    <td>\
+                                        {{unit_extra_info.data.builder_name}}\
+                                    </td>\
+                                </tr>\
+                                <tr>\
+                                    <th style="float:right">\
+                                        Type:\
+                                    </th>\
+                                    <td>\
+                                        {{unit_extra_info.data.project_type}}\
+                                    </td>\
+                                    <th style="float:right">\
+                                        Area:\
+                                    </th>\
+                                    <td>\
+                                        {{ unit_extra_info.data.area_name }},{{ unit_extra_info.data.city }}\
+                                    </td>\
+                                </tr>\
+                            </table>\
+                        </div>\
+                        <div class="table-responsive">\
+                            <table class="table table-striped table-bordered table-hover">\
+                                <thead>\
+                                    <tr>\
+                                        <th>Component</th>\
+                                        <th>Sub Component</th>\
+                                        <th>Value</th>\
+                                        <th>Cost Type</th>\
+                                        <th>Sub-Amount</th>\
+                                    </tr>\
+                                </thead>\
+                                <tbody>'+ 
+                                component_entry
+                                +'</tbody>\
+                            </table>\
+                            <div class="col-lg-4 col-lg-offset-8">\
+                                <table class="table">\
+                                    <tr>\
+                                        <th>Total Sale Value</th>\
+                                        <td> Rs. '+ result_json.total_sale_value +'</td>\
+                                    </tr>\
+                                </table>\
+                            </div>\
+                        </div>\
+                        ';
+                $('.modal-body').html(html);
+                
+            },
+            error:function(result, error){
+                console.log(error);
+                var html = 'There is no price sheet entry exist for this booking'
+                $('.modal-body').html(html);
+            }
+        });
+
+        
+    });
+</script>
+
+{% endblock %}

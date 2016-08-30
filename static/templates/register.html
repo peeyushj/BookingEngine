@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+{% include 'messages.html' %}
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="panel panel-default" style="margin-top:20px;">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Register a User</h3>
+                    </div>
+                    <div class="panel-body">
+                    	{% if form.errors %}
+							<p>Your username and password didn't match. Please try again.</p>
+						{% endif %}
+                        <form role="form" method="post">
+                            <fieldset>
+                            	<div class="form-group">
+                                    <input class="form-control" placeholder="Username" name="user_name" type="user_name" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="First Name" name="first_name" type="first_name">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Last Name" name="last_name" type="last_name">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="E-mail" name="email" type="email">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="password" type="password" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Confirm Password" name="confirm_password" type="password" value="">
+                                </div>
+                                <hr>
+                                <div class="form-group">
+                                    <select class="form-control" name="role" type="role">
+                                        <option value="-1">Select A Role</option>
+                                        <option value="Admin">Admin</option>
+                                        <option value="Booking Team">Booking Team</option>
+                                        <option value="Project Team">Project Team</option>
+                                    </select>
+                                    <!-- <input class="form-control" placeholder="Assign Role" name="role" type="role"> -->
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <input type="hidden" name="next" value="{{ next }}" />
+                                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Register" name="register">
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

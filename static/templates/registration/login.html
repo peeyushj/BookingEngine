@@ -1,0 +1,46 @@
+{% extends 'template.html' %}
+{% include 'messages.html' %}
+
+{% block content %}
+<div class="col-md-4 col-md-offset-4">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Please Sign In</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% if form.non_field_errors %}
+                            <div style="color:red">{{form.non_field_errors}}</div>
+                        {% endif %}
+                        <form role="form" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+                            {% csrf_token %}
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Username or Email" name="username" type="username" autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="Password" name="password" type="password" value="">
+                                </div>
+                                <div class="checkbox" align="left">
+                                    <label>
+                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
+                                    </label>
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <input class="btn btn-lg btn-success btn-block" type="submit" value="Login" />
+                                <input type="hidden" name="next" value="{{ next }}" />
+                            </fieldset>
+                        </form>
+                        <div align="left">
+                            <a href="{% url 'django.contrib.auth.views.password_reset' %}"> Forgot Password?</a>
+                        </div>
+                        <!-- <form role="form" method="post" action="{% url 'django.contrib.auth.views.password_reset' %}">
+                            {% csrf_token %}
+                            <fieldset>
+                                <input class="btn btn-lg btn-success btn-block" type="submit" value="Reset Password" />
+                                <input type="hidden" name="next" value="{{ next }}" />
+                            </fieldset>
+                        </form> -->
+                    </div>
+                </div>
+            </div>
+{% endblock %}

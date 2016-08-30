@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+<link href="/static/bower_components/datatables-responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<br>
+
+<script type="text/javascript">
+    
+    $('body').on('focus',".datepicker_recurring_start", function(){
+        $(this).datepicker({
+            dateFormat:'yy-mm-dd'
+        });
+    });
+
+    function validateCreateForm (argument) {
+        var formElements=argument.elements;
+
+        if(typeof formElements.payment_plan_name =="undefined" || formElements.payment_plan_name.value ==null || formElements.payment_plan_name.value  ==""){
+            alert("Please Enter Any Payment Plan Name");
+            return false;   
+        };
+
+        if(typeof formElements.payment_plan_description =="undefined" || formElements.payment_plan_description.value ==null || formElements.payment_plan_description.value  ==""){
+            alert("Please Enter Any Payment Plan Description");
+            return false;   
+        };
+
+        if(typeof formElements.payment_plan_date =="undefined" || formElements.payment_plan_date.value ==null || formElements.payment_plan_date.value  ==""){
+            alert("Please Enter Any Payment Plan Date");
+            return false;   
+        };
+
+        if(typeof formElements.is_active =="undefined" || formElements.is_active.value ==null || formElements.is_active.value  ==""){
+            alert("Please select any in-active value");
+            return false;   
+        };
+
+        return true;
+
+    }
+
+</script>
+<!--<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/resources/demos/style.css">
+
+  <script>
+      $(function() {
+        $( "#createDatePicker" ).datepicker({
+            dateFormat: 'yy-mm-dd'
+        });
+      });
+  </script>
+
+  <input class="form-control" type="text" id="createDatePicker1" name="payment_plan_date" placeholder="Enter Date"> -->
+{% include 'messages.html' %}
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Payment Plan For: {{project.project_name}}</h3>
+    </div>
+</div>
+
+<!-- <div class="row">
+    <div class="col-lg-4 col-lg-offset-8" align="right">
+        <form role="form" action='' method="POST">
+            {% csrf_token %}
+            <div class="form-group input-group">
+                <input type="text" class="form-control" name="search-term" placeholder="Search Name">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" name="search_payment_plan"><i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div> -->
+
+<form role="form" action='' method="POST">
+    {% csrf_token %}
+    <div class="form-group input-group" style="float:right">
+        <a href="#"  id="linkCreatePaymentPlan">Create a Payment Plan</a>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- <h3 class="page-header">Buyer's List</h3> -->
+            <div class="panel panel-default">
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="dataTables-payment-plan">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Project Type</th>
+                                    <th>Tower</th>
+                                    <th>Unit Variant</th>
+                                    <th>Promoter</th>
+                                    <th>Arrange Date</th>
+                                    <th>isActive</th>
+                                    <!-- <th>isDefault</th> -->
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	{% for payment_plan in payment_plan_info %}
+                                <tr>
+                                    <td>{{ payment_plan.payment_plan_name }}</td>
+                                    <td>{{ payment_plan.payment_plan_description }}</td>
+                                    <td>
+                                        {% if not payment_plan.project_type_name %}
+                                            All
+                                        {% else %}
+                                            {{payment_plan.project_type_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not payment_plan.tower_name %}
+                                            All
+                                        {% else %}
+                                            {{payment_plan.tower_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not payment_plan.unit_variant_name %}
+                                            All
+                                        {% else %}
+                                            {{payment_plan.unit_variant_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not payment_plan.broker_name %}
+                                            All
+                                        {% else %}
+                                            {{payment_plan.broker_name}}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ payment_plan.as_of_date }}</td>
+                                    <td>{{ payment_plan.is_active }}</td>
+                                    <!-- <td>{{ payment_plan.is_default }}</td> -->
+                                    <td class="actionCol">
+                                    	<form role="form" action='' method="POST">
+								            {% csrf_token %}
+								            <div class="form-group input-group">
+                                                <!-- [<a href="#" id="linkMakeDefaultPaymentPlan" data-plan-id="{{payment_plan.payment_plan_id}}" data-project-id="{{ payment_plan.project_id }}">Make It Default</a>]&nbsp;&nbsp; -->
+                                                [<a href="/project_payment_plan_edit/{{ payment_plan.payment_plan_id }}">Edit</a>]&nbsp;&nbsp;
+                                                [<a href="#" id="linkDeletePaymentPlan" data-plan-id="{{payment_plan.payment_plan_id}}" data-plan-is-default="{{payment_plan.is_default}}">Delete</a>]
+								            </div>
+								        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalCreatePaymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 500px; margin-top:10px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalDeletePaymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalMakeDefaultPaymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $('.actionCol').find('#linkDeletePaymentPlan').click(function(){
+        $('#myModalDeletePaymentPlan').modal('show');
+
+        is_default = $(this).data('plan-is-default');
+        var html = '';
+        if(is_default == 'False')
+        {
+            html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to delete this payment plan?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="payment_plan_id" id="payment_plan_id" value="'+$(this).data('plan-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="payment_plan_delete">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+        }
+        else
+        {
+            html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        You can not delete a default payment plan. Please make some other payment plan as a default to do this activity.\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">OK</button>\
+                    </form></div>';
+        }
+
+        $('.modal-body').html(html);
+    });
+
+    $('.actionCol').find('#linkMakeDefaultPaymentPlan').click(function(){
+        $('#myModalMakeDefaultPaymentPlan').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to make this payment plan as a Default?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="payment_plan_id" id="payment_plan_id" value="'+$(this).data('plan-id')+'" />\
+                        <input type="hidden" name="project_id" id="project_id" value="'+$(this).data('project-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="make_it_default">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+
+        $('.modal-body').html(html);
+    });
+
+
+    $('#linkCreatePaymentPlan').click(function(){
+        $('#myModalCreatePaymentPlan').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                            <span aria-hidden="true">&times;</span>\
+                        </button>\
+                        <h3 align="center">\
+                            Create a Payment Plan\
+                        </h3>\
+                        <form role="form" method="post" action="">\
+                            <fieldset>\
+                                <div class="table-responsive">\
+                                    <table class="table">\
+                                            <tr>\
+                                                <th>Name</th>\
+                                                <td>\
+                                                    <input class="form-control" name="payment_plan_name" type="payment_plan_name" placeholder="Enter Name">\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Description</th>\
+                                                <td>\
+                                                    <textarea class="form-control" name="payment_plan_description" rows="3" placeholder="Enter Description"></textarea>\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Date</th>\
+                                                <td>\
+                                                <input class="datepicker_recurring_start form-control" autocomplete="off" placeholder="Enter Date(YYYY-MM-DD)" name="payment_plan_date" id="">\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Property Type: </th>\
+                                                <td>\
+                                                    <select class="form-control" name="payment_plan_property_type" type="payment_plan_property_type">\
+                                                        <option value="0">All</option>\
+                                                        {% for project_type in project_types %}\
+                                                            <option value="{{project_type.project_type_id}}">{{project_type.project_type_name}}</option>\
+                                                        {% endfor %}\
+                                                    </select>\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Tower Name: </th>\
+                                                <td>\
+                                                    <select class="form-control" name="payment_plan_property_tower" type="payment_plan_property_tower">\
+                                                        <option value="0">All</option>\
+                                                        {% for tower in towers %}\
+                                                            <option value="{{tower.tower_id}}">{{tower.tower_name}}</option>\
+                                                        {% endfor %}\
+                                                    </select>\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Unit Variant: </th>\
+                                                <td>\
+                                                    <select class="form-control" name="payment_plan_property_unit_variant" type="payment_plan_property_unit_variant">\
+                                                        <option value="0">All</option>\
+                                                        {% for unit_variant in unit_variants %}\
+                                                            <option value="{{unit_variant.unit_variant_id}}">{{unit_variant.unit_variant_name}}</option>\
+                                                        {% endfor %}\
+                                                    </select>\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>Promoter Name</th>\
+                                                <td>\
+                                                    <select class="form-control" name="broker_name" type="broker_name">\
+                                                        <option value="0">All</option>\
+                                                        {% for broker in brokers %}\
+                                                            <option value="{{broker.broker_id}}">{{broker.broker_name}}</option>\
+                                                        {% endfor %}\
+                                                    </select>\
+                                                </td>\
+                                            </tr><tr>\
+                                                <th>is Active</th>\
+                                                <td>\
+                                                    <label>\
+                                                        <input type="radio" name="is_active" id="is_active" value="1" checked=""> Yes\
+                                                    </label>&nbsp;&nbsp;\
+                                                    <label>\
+                                                        <input type="radio" name="is_active" id="is_active" value="0"> No\
+                                                    </label>\
+                                                </td>\
+                                            </tr>\
+                                    </table>\
+                                </div>\
+                                <div class="col-lg-4 col-lg-offset-4">\
+                                    <input class="btn btn-lg btn-primary btn-block" type="submit" onclick="return validateCreateForm(this.form)" name="payment_plan_create" value="Create" />\
+                                </div>\
+                            </fieldset>\
+                        </form>';
+
+            $('.modal-body').html(html);
+    });
+</script>
+
+    <!-- DataTables JavaScript -->
+<script src="/static/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+<script>
+$(document).ready(function() {
+    $('#dataTables-payment-plan').DataTable({
+        responsive: true
+    });
+});
+</script>
+
+{% endblock %}

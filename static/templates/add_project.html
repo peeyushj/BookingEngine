@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+<link href="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+<!-- DataTables Responsive CSS -->
+<link href="/static/bower_components/datatables-responsive/css/dataTables.responsive.css" rel="stylesheet">
+
+<script src="{% static "js/jquery-ui.min.js" %}"></script>
+
+<script type="text/javascript">
+
+	$(function () {
+		$("#autocompleteArea").autocomplete({
+			minLenght: 2,
+			source: function(request,response) {  
+				
+				var overlaydiv = document.getElementById("overlayImg");
+				overlaydiv.style.display = "block";
+				// overlaydiv.style.top = "31.5%";
+				// overlaydiv.style.left = "88%";
+				$("#selectPropertyId").empty();
+				$('#select2-chosen-2').text('--Select Any Property--');
+				var cityName=$('#selectCityId').val();
+				$.ajax({
+					url: "{% url 'getAreaDetail' %}", 
+					// url:"http://localhost:8000/getAreaDetail",
+					type:'POST',
+					data:{"cityName":cityName,
+					"area":$("#autocompleteArea").val()	
+					},
+					success: function(result){
+						if(typeof result ==="string"){
+							result=JSON.parse(result);
+						}
+						if(result !=null && result !="" && !$.isEmptyObject(result)){
+							response($.map(result, function( item ,index) {
+								return {
+									label: index,
+									value: index,
+									text:  item[0]
+								}
+							}));
+						}else{
+							response(["No Data Found"]);
+						}  
+
+						overlaydiv.style.display = "none";
+					},
+					error:function(result){
+						response(["No Data Found"])
+
+					}
+				});
+			},
+			select: function(event, ui) {
+				// prevent autocomplete from updating the textbox
+				event.preventDefault();
+				if(ui.item.label !="No Data Found"){
+					$('#autocompleteArea').val(ui.item.label);
+
+					if(ui.item.text !=null && ui.item.text !=undefined && ui.item.text !=""){ 
+						getProperties(ui.item.text);
+					}
+				}
+				// navigate to the selected item's url
+				//window.open(ui.item.url);
+			}
+		});
+
+		$("#selectCityId").select2();
+		$("#selectPropertyId").select2();
+	});
+
+	function getProperties(value){
+    	var overlaydiv = document.getElementById("overlayImg1");
+    	overlaydiv.style.display = "block";
+    	// overlaydiv.style.top = "40%";
+    	// overlaydiv.style.left = "87%";
+        if (value !=null && value !=undefined) {
+        	var cityName=$('#selectCityId').val();
+            $.ajax({
+            	
+	    		url: "{% url 'getPropertyDetail' %}", 
+	        	type:'POST',
+        		data:{"areaZone":value,
+        			  "cityName":cityName},
+
+	        	success: function(result){
+	        		if(typeof result ==="string"){
+   						result=JSON.parse(result);
+   					}
+	       			$("#selectPropertyId").empty();
+	       			$("#selectPropertyId").append("<option selected disabled value >Select any Property</option>");
+	       			for(var project_index in result){
+	       				text=result[project_index].name;
+	       				project_type=result[project_index].project_type+'|'+result[project_index].builder_name;
+	       				value=result[project_index].property_id;
+						$("#selectPropertyId").append("<option value='" + value +"' label='" +project_type +"'>"+text+"</option>");
+
+					}
+					document.getElementById('selectPropertyId').disabled=false;
+					overlaydiv.style.display = "none";
+				},
+				error:function(result){
+					$("#selectPropertyId").empty();
+					$("#selectPropertyId").append("<option selected disabled value >No data Found</option>");
+				}
+			});
+		};
+
+	}
+
+	function getPropertyDetails(value){
+		if (value !=null && value !=undefined) {
+			var element=document.getElementById('selectPropertyId');
+			var count=document.getElementById('selectPropertyId').selectedIndex;
+			project_type_values=element[count].label;
+			project_type_value_array=project_type_values.split('|');
+
+			document.getElementById('city').value=$('#selectCityId').val();
+			document.getElementById('area').value=$('#autocompleteArea').val();
+			document.getElementById('project_name').value=element[count].innerText;
+			document.getElementById('project_id').value=element[count].value;
+			document.getElementById('project_type').value=project_type_value_array[0];
+			document.getElementById('builder_name').value=project_type_value_array[1];
+		};
+
+	}
+
+	function displayProperty(value){
+        if (value !=null && value !=undefined) {
+            $("#selectPropertyId").empty();
+            document.getElementById('selectPropertyId').disabled=true;
+            document.getElementById('autocompleteArea').disabled=false;
+            $('#select2-chosen-2').text('--Select Any Property--');
+            $('#autocompleteArea').val('');
+        };
+    }
+
+	function removeAlert (argument) {
+		var overlay = document.getElementById("overlay");
+		var popup = document.getElementById("popup");
+		overlay.style.display = "none";
+		popup.style.display = "none";
+	}
+
+	function validateForm (argument) {
+		var formElements=argument.elements;
+		var overlay = document.getElementById("overlay");
+		var popup = document.getElementById("popup");
+		overlay.style.display = "block";
+		popup.style.display = "block";
+
+
+		if(typeof formElements.select_city_list =="undefined" || formElements.select_city_list.value ==null || formElements.select_city_list.value  =="" || formElements.select_city_list.value =="0"){
+			document.getElementById('msgText').innerHTML="Please select any City";
+			return false;	
+		};
+
+		if(typeof formElements.select_area_list =="undefined" || formElements.select_area_list.value ==null || formElements.select_area_list.value  =="" || formElements.select_area_list.value =="0"){
+			document.getElementById('msgText').innerHTML="Please select any Area";
+			return false;	
+		};
+
+		if(typeof formElements.select_property_list =="undefined" || formElements.select_property_list.value ==null || formElements.select_property_list.value  =="" || formElements.select_property_list.value =="0"){
+			document.getElementById('msgText').innerHTML="Please select any Property";
+			return false;	
+		};
+
+		
+		overlay.style.display = "none";
+		popup.style.display = "none";
+		return true;
+
+	}
+
+</script>
+
+<link href="{% static "dist/css/jquery-ui.css" %}" rel="stylesheet"> 
+
+<style>
+	.select2-offscreen,
+	.select2-offscreen:focus {
+		clip: rect(0 0 0 0) !important;]
+		border: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+		overflow: hidden !important;
+		position: absolute !important;
+		outline: 0 !important;
+		left: 0px !important;
+		top: 0px !important;
+	}
+	.contenedor-select2 {
+		position: relative;
+	}
+
+	#popup {
+		display:none;
+		position:absolute;
+		left:60%;             
+		top:50%;              
+		width:300px;          
+		height:150px;   
+		margin-left:-150px;  
+		margin-top:-75px;    
+		background:#DBC6C6;   
+		border:1px solid #000;   
+		z-index:100000;    
+		font-size: 16px;
+		font-weight: bolder; 
+		padding:2%;
+	}
+
+	.customBtn{
+		display: block;
+		left: 42%;
+		position: inherit;
+		margin-top: 7%;
+	}
+
+	#overlayImg{
+		display: none;
+		position: absolute;
+		right:16px;
+		top:1px;
+		background: #fff;
+		width: 30px;
+		height: 30px;
+		background-image: url('/static/images/overlay.gif');
+		background-repeat: no-repeat;
+		background-size: 50% 50%;
+		background-position: 50% 50%;
+		opacity: 0.5;
+		z-index: 99999;
+	}
+	#overlayImg1{
+		display: none;
+		position: absolute;
+		right: 30px;
+		top: 16px;
+		background: #fff;
+		width: 30px;
+		height: 30px;
+		background-image: url('/static/images/overlay.gif');
+		background-repeat: no-repeat;
+		background-size: 50% 50%;
+		background-position: 50% 50%;
+		opacity: 0.5;
+		z-index: 99999;
+	}
+</style>
+
+<div class="row">
+    <div class="col-lg-12" >
+        <h3 class="page-header">Add A Project</h3>
+    </div>
+</div>
+
+<div id="popup">
+	<p id="msgText"></p>
+	<button class="btn btn-outline btn-warning customBtn" onclick="removeAlert()" id="popupButton">OK</button>
+</div>
+
+{% include 'messages.html' %}
+<div class="row">
+    <div class="col-sm-12 col-lg-12 col-md-12" align="center">
+        <div class="table-responsive">
+            <div class="form-group">
+            	<form role="form" id="AddProjectForm" method='POST' action='' class="form-horizontal">
+					{% csrf_token %}
+	            	<fieldset>
+	            		<input type="hidden" name="city" id="city" value="" />
+	            		<input type="hidden" name="area" id="area" value="" />
+	            		<input type="hidden" name="project_name" id="project_name" value="" />
+	            		<input type="hidden" name="project_id" id="project_id" value="" />
+	            		<input type="hidden" name="project_type" id="project_type" value="" />
+	            		<input type="hidden" name="builder_name" id="builder_name" value="" />
+						<div class="col-sm-4 col-md-offset-2" >
+							<select required style="width:100%; font-size: 14px;padding:1px;" id="selectCityId" name="select_city_list" aria-controls="dataTables-example" class="form-control1 input-md " onchange="displayProperty(this.value)">
+								<option selected value>--Select A City--</option>
+								{% for result in cities.results %}
+									<option value="{{ result.city_name }}">{{ result.city_name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-sm-4" style="position:relative;">
+
+							<input type="text" disabled name="select_area_list" id="autocompleteArea" placeholder="Locality Name" class="form-control input-md" />	
+							<div id="overlayImg"></div>
+						</div>
+
+						<div class="col-md-8 col-md-offset-2" style="padding-top:15px;position:relative;">
+							<select  required style="width:100%"  id='selectPropertyId' disabled name="select_property_list" aria-controls="dataTables-example" class="form-control1 input-md1 " onchange="getPropertyDetails(this.value)">
+								<option value="0">--Select A Property--</option>
+							</select>
+							<div id="overlayImg1"></div>
+						</div>
+						
+
+						<div class="col-md-4 col-md-offset-4 txtalcent">
+							<br /><br />
+							<button type="submit" onclick="return validateForm(this.form)" name="booking_engine_added_project_add" class="btn btn-primary">Add Project</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- <h3 class="page-header">Buyer's List</h3> -->
+            <div class="panel panel-default">
+                <div class="panel-heading" align="center">
+                    Already Added Projects
+                </div>
+                <div class="panel-body">
+                    <div class="dataTable_wrapper">
+                        <table class="table table-striped table-bordered table-hover" id="dataTables-projects">
+                            <thead>
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Project Area</th>
+                                    <th>Project City</th>
+                                    <th>Builder Name</th>
+                                    <th>Info</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	{% for booking_engine_added_project in booking_engine_added_projects %}
+                                <tr>
+                                    <td>{{ booking_engine_added_project.project_name }}</td>
+                                    <td>{{ booking_engine_added_project.project_area }}</td>
+                                    <td>{{ booking_engine_added_project.project_city }}</td>
+                                    <td>{{ booking_engine_added_project.builder_name }}</td>
+                                    <td class="actionCol">
+                                    	<form role="form" action='' method="POST">
+								            {% csrf_token %}
+								            <div class="form-group input-group">
+								            	[<a href="/project_payment_plan/{{ booking_engine_added_project.project_id }}">Payment Plan</a>]&nbsp;
+                                                [<a href="/project_pricing_structure/{{ booking_engine_added_project.project_id }}">Price Sheet</a>]&nbsp;
+                                                [<a href="/project_builder_contact/{{ booking_engine_added_project.project_id }}">Contacts</a>]
+								            </div>
+								        </form>
+                                    </td>
+                                    <td class="actionDeleteCol">
+                                    	<form role="form" action='' method="POST">
+								            {% csrf_token %}
+								            <div class="form-group input-group">
+											    <input class="btn btn-md btn-link btn-block" type="submit" name="booking_engine_added_project_delete" value="Delete" />
+			                                	<input type="hidden" name="booking_engine_added_project_id" value="{{ booking_engine_added_project.id }}" />
+								            </div>
+								        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<script src="/static/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+
+<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+<script>
+$(document).ready(function() {
+    $('#dataTables-projects').DataTable({
+            responsive: true
+    });
+});
+</script>
+
+{% endblock %}

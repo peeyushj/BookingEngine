@@ -1,0 +1,921 @@
+{% extends "base.html" %}
+{% block content %}
+
+<script type="text/javascript">
+	
+	$(function () {
+
+		$('#datepicker').datepicker({
+			dateFormat:'yy-mm-dd'
+		});
+
+		getSelectedValue("{{price_sheet_info.project_type_id}}","{{price_sheet_info.tower_id}}","{{price_sheet_info.unit_variant_id}}","{{price_sheet_info.broker_id}}");
+
+	});
+
+	function getSelectedValue(propertyTypeId, towerId, unitVariantId, brokerId){
+		var selectPropertyTypeId = document.getElementById('selectPropertyTypeId');
+		selectPropertyTypeId.value=propertyTypeId;
+
+		var selectTowerId = document.getElementById('selectTowerId');
+		selectTowerId.value=towerId;
+
+		var selectUnitVariantId = document.getElementById('selectUnitVariantId');
+		selectUnitVariantId.value=unitVariantId;
+
+		var selectBrokerId = document.getElementById('selectBrokerId');
+		selectBrokerId.value=brokerId;
+	}
+
+    function validateEditPriceSheetForm (argument) {
+        var formElements=argument.elements;
+
+        if(typeof formElements.price_sheet_name =="undefined" || formElements.price_sheet_name.value ==null || formElements.price_sheet_name.value  ==""){
+            alert("Please Enter Any Price Sheet Name");
+            return false;   
+        };
+
+        if(typeof formElements.price_sheet_description =="undefined" || formElements.price_sheet_description.value ==null || formElements.price_sheet_description.value  ==""){
+            alert("Please Enter Any Price Sheet Description");
+            return false;   
+        };
+
+        if(typeof formElements.price_sheet_date =="undefined" || formElements.price_sheet_date.value ==null || formElements.price_sheet_date.value  ==""){
+            alert("Please Enter Any Price Sheet Date");
+            return false;   
+        };
+
+        if(typeof formElements.is_active =="undefined" || formElements.is_active.value ==null || formElements.is_active.value  ==""){
+            alert("Please select any in-active value");
+            return false;   
+        };
+
+        return true;
+
+    }
+
+    function validateCreateComponentForm(argument){
+    	var formElements=argument.elements;
+
+        if(typeof formElements.price_type =="undefined" || formElements.price_type.value ==null || formElements.price_type.value  =="" || formElements.price_type.value  =="0"){
+            alert("Please Enter Any Price Type");
+            return false;   
+        };
+
+        if(typeof formElements.cost_type =="undefined" || formElements.cost_type.value ==null || formElements.cost_type.value  ==""){
+            alert("Please Enter Any Cost Type");
+            return false;   
+        };
+
+        if(typeof formElements.amount =="undefined" || formElements.amount.value ==null || formElements.amount.value  ==""){
+            alert("Please select any amount");
+            return false;   
+        }
+        else{
+			var patternInt = /^-?(\d+\.?\d*)$|(\d*\.?\d+)$/;
+			if(!patternInt.test(formElements.amount.value)){
+				alert("Amount is not valid. Please provide right values.");
+				return false;
+			}
+			else{
+				cost_type = formElements.cost_type.value;
+				if(cost_type=="Percentage" && Number(formElements.amount.value)>100 && Number(formElements.amount.value<0))
+				{
+					alert("Amount should be between 0 & 100 in case of Percentage");
+					return false;
+				}
+			}
+		};
+
+        return true;
+    }
+
+</script>
+{% include 'messages.html' %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <h3 class="page-header">Edit Price Sheet: {{price_sheet_info.name}}</h3>
+    </div>
+    <!-- <div class="col-lg-4" align="right" style="v-align:bottom">
+		<a href="/project_pricing_structure/{{price_sheet_info.project_id}}">Back to Price Sheets</a>
+	</div> -->
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<form role="form" method="post" action="">
+			<fieldset>
+		        <table class="table">
+		        	<tr>
+	                    <th style="float:right">Name: </th>
+	                    <td>
+	                        <input class="form-control" name="price_sheet_name" type="price_sheet_name" value="{{price_sheet_info.name}}">
+	                    </td>
+						<th style="float:right">Description: </th>
+	                    <td>
+	                    	<input class="form-control" name="price_sheet_description" type="price_sheet_description" value="{{price_sheet_info.description}}">
+	                    	<!-- <textarea class="form-control" name="price_sheet_description" rows="3">{{price_sheet_info.description}}</textarea> -->
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <th style="float:right">Property Type: </th>
+	                    <td>
+	                    	<select class="form-control" name="price_sheet_property_type" type="price_sheet_property_type" id="selectPropertyTypeId">
+	                    		<option value="0">All</option>
+	                    		{% for project_type in project_types %}
+                                    <option value="{{project_type.project_type_id}}">{{project_type.project_type_name}}</option>
+                                {% endfor %}
+	                    	</select>
+	                    	<!-- <input class="form-control" name="payment_plan_property_type" type="payment_plan_property_type" value="{{payment_plan_info.payment_plan_property_type}}"> -->
+	                    </td>
+	                    <th style="float:right">Tower: </th>
+	                    <td>
+	                    	<select class="form-control" name="price_sheet_property_tower" id="selectTowerId" type="price_sheet_property_tower">
+	                    		<option value="0">All</option>
+	                    		{% for tower in towers %}
+	                    			<option value="{{tower.tower_id}}">{{tower.tower_name}}</option>
+	                    		{% endfor %}
+	                    	</select>
+	                        <!-- <input class="form-control" name="payment_plan_tower" type="payment_plan_tower" value="{{payment_plan_info.payment_plan_tower}}"> -->
+	                    </td>
+	                </tr>
+	                <tr>
+						<th style="float:right">Unit Variant: </th>
+	                    <td>
+	                    	<select class="form-control" name="price_sheet_property_unit_variant" type="price_sheet_property_unit_variant" id="selectUnitVariantId">
+	                    		<option value="0">All</option>
+	                    		{% for unit_variant in unit_variants %}
+	                    			<option value="{{unit_variant.unit_variant_id}}">{{unit_variant.unit_variant_name}}</option>
+	                    		{% endfor %}
+	                    	</select>
+	                    	<!-- <input class="form-control" name="payment_plan_unit_variant" type="payment_plan_unit_variant" value="{{payment_plan_info.payment_plan_unit_variant}}"> -->
+	                    </td>
+	                    <th style="float:right">Promoter: </th>
+	                    <td>
+	                    	<select class="form-control" name="broker_name" type="broker_name" id="selectBrokerId">
+                                <option value="0">All</option>
+                                {% for broker in brokers %}
+                                    <option value="{{broker.broker_id}}">{{broker.broker_name}}</option>
+                                {% endfor %}
+                            </select>
+	                    </td>
+	                </tr>
+	                <tr>
+						<th style="float:right">Arrange Date: </th>
+	                    <td>
+	                    	<input type="text" autocomplete="off" name="price_sheet_date" value="{{price_sheet_info.as_of_date|date:"Y-m-d"}}" id="datepicker" placeholder="Price Sheet Date" class="form-control"/>
+	                    </td>
+	                	<th style="float:right">Is Active: </th>
+	                    <td>
+                	        <label>
+                                <input type="radio" name="is_active" id="is_active" value="1" "{% if price_sheet_info.is_active %} checked {% endif %}"> Yes
+                            </label>&nbsp;&nbsp;
+                            <label>
+                                <input type="radio" name="is_active" id="is_active" value="0" "{% if not price_sheet_info.is_active %} checked {% endif %}"> No
+                            </label>
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <td></td>
+	                	<td colspan="2" style="padding-left:100px">
+		                    <input class="btn btn-lg btn-primary btn-block" type="submit" name="price_sheet_edit" onclick="return validateEditPriceSheetForm(this.form)" value="Edit Price Sheet" />
+		                </td>
+		                <td align="right">
+		                	<a href="/project_pricing_structure/{{price_sheet_info.project_id}}">Back to Price Sheets</a>
+		                    	<!-- <a href="#" id="linkUpdateAllUnits" data-project-id="{{price_sheet_info.project_id}}" data-price-sheet-id="{{price_sheet_info.pricesheet_id}}">Make It Default for All Units</a> -->
+	                    </td>
+	                </tr>
+				</table>
+					
+				
+			</fieldset>
+		</form>
+	</div>
+</div>
+
+<form role="form" action='' method="POST">
+	{% csrf_token %}
+	<div class="form-group input-group" style="float:right">
+		[<a href="#" id="myModalViewFullPriceSheet">View Full Price Sheet</a>]
+		[<a href="#"  id="myModalCreatePriceSheetComponent">Create a Component</a>]
+	</div>
+</form>
+
+<div class="row">
+    <div class="col-lg-12" align="center">
+        <!-- <h3 class="page-header">Buyer's List</h3> -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Components
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Price Type</th>
+                                    <th>Price Type Description</th>
+                                    <th>Price Sub Type</th>
+                                    <th>Price Sub Type Description</th>
+                                    <th>Cost Type</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            	{% for price_sheet_component in price_sheet_component_info %}
+                                <tr>
+                                    <td>{{ price_sheet_component.price_type }}</td>
+                                    <td>{{ price_sheet_component.price_type_free_text }}</td>
+                                    <td>
+                                    	{% ifequal price_sheet_component.price_type "PLC-Floorrise" %}
+                                    		{% ifnotequal price_sheet_component.price_sub_type "Fix Increasing Cost" %}
+                                    			{% ifnotequal price_sheet_component.price_sub_type "Fix Decreasing Cost" %}
+                                    				Floor Number - {{price_sheet_component.price_sub_type}}
+	                                    		{% else %}
+	                                    			{{price_sheet_component.price_sub_type}}
+	                                    		{% endifnotequal %}
+                                    		{% else %}
+                                    			{{price_sheet_component.price_sub_type}}
+                                    		{% endifnotequal %}
+                                    	{% else %}
+                                    		{{price_sheet_component.price_sub_type}}
+                                    	{% endifequal %}
+                                    </td>
+                                    <td>{{ price_sheet_component.price_sub_type_free_text }}</td>
+                                    <td>{{ price_sheet_component.cost_type }}</td>
+                                    <td>{{ price_sheet_component.amount }}</td>
+                                    <td class="editCol">
+                                    	<form role="form" action='' method="POST">
+								            {% csrf_token %}
+								            <div class="form-group input-group">
+								            	<a href="#"  id="myModalEditPriceSheetComponent" data-price-type="{{ price_sheet_component.price_type }}" data-price-type-free-text="{{ price_sheet_component.price_type_free_text }}" data-price-sub-type="{{ price_sheet_component.price_sub_type }}" data-price-sub-type-free-text="{{ price_sheet_component.price_sub_type_free_text }}" data-cost-type="{{ price_sheet_component.cost_type }}" data-amount="{{ price_sheet_component.amount }}" data-component-id="{{ price_sheet_component.pricesheet_component_id }}" >Edit</a>&nbsp;&nbsp;
+								            	<a href="#" id="linkDeletePriceSheetComponent" data-component-id="{{ price_sheet_component.pricesheet_component_id }}">Delete</a>
+								            </div>
+								        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.table-responsive -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+
+<script type="text/javascript">
+
+	function checkSelectValue(cost_type, price_sub_type, price_type){
+		var select_cost_type = document.getElementById('cost_type');
+		var select_price_type = document.getElementById('price_type_id');
+		var select_price_sub_type = document.getElementById('price_sub_type');
+		var selected_subType = document.getElementById('price_sub_type_sqft');
+		if(price_type == "Basic" || price_type == "Parking" || price_type == "Direction"){
+			setSelectedValue(selected_subType,price_sub_type);
+		}
+		else if(price_type == "PLC" || price_type == "View Facing"){
+			if(price_sub_type == "-")
+			{
+				setSelectedValue(selected_subType,"Others - Please mention it in description");
+			}
+			else
+				setSelectedValue(selected_subType,price_sub_type);
+		}
+		else if(price_type == "PLC-Floorrise"){
+			if(price_sub_type == "Fix Increasing Cost"||price_sub_type == "Fix Decreasing Cost")
+			{
+				setSelectedValue(selected_subType,price_sub_type);
+			}
+			else
+			{
+				setSelectedValue(selected_subType,"Floor Number - " + price_sub_type);
+			}
+			//select_cost_type.removeAttribute("disabled");
+		}
+		setSelectedValue(select_price_type, price_type);
+		setSelectedValue(select_cost_type, cost_type);
+
+	}
+
+	function setSelectedValue(selectObj, valueToSet) {
+    for (var i = 0; i < selectObj.options.length; i++) {
+        if (selectObj.options[i].text== valueToSet) {
+            selectObj.options[i].selected = true;
+            return;
+        }
+    }
+}
+
+	function change_sub_type(argument){
+		var price_type_id=argument.elements.price_type.id;
+		var cost_type_id=argument.elements.cost_type.id;
+
+		var selected_select = document.getElementById(price_type_id);
+		var text=selected_select.options[argument.elements.cost_type.selectedIndex].text;		
+		//alert(selected_select[selected_select.selectedIndex].value);
+		price_type = selected_select[selected_select.selectedIndex].value;
+		var price_sub_type_sqft = argument.elements.price_sub_type_sqft;
+		var price_sub_type = argument.elements.price_sub_type;
+
+		
+		//Need to change
+		// var elems = document.querySelectorAll(".selectClass");
+		// [].forEach.call(elems, function(el) {
+		//     el.className = el.className.replace(/\hideElement\b/, "");
+		// });
+		// var testarray = document.getElementsByClassName("inputClass");
+		// for(var i = 0; i < testarray.length; i++)
+		// {
+		//     testarray[i].className += "hideElement";
+		// }
+		// var element = document.getElementById(cost_type_id);
+		// $('#'+cost_type_id).addClass('disabledCss');
+		// element.selectedIndex = 1;
+
+		//End - Need to change
+
+
+
+		if(price_type == "Basic"){
+			price_sub_type_sqft.innerHTML = "<option value='Super Builtup Area'>Super Builtup Area</option><option value='Builtup Area'>Builtup Area</option><option value='Carpet Area'>Carpert Area</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+		}
+		else if(price_type == "Parking"){
+			price_sub_type_sqft.innerHTML = "<option value='Open'>Open</option><option value='Covered'>Covered</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+		}
+		else if(price_type == "Direction"){
+			price_sub_type_sqft.innerHTML = "<option value='East'>East</option><option value='West'>West</option><option value='North'>North</option><option value='South'>South</option><option value='North-East'>North-East</option><option value='North-West'>North-West</option><option value='South-East'>South-East</option><option value='South-West'>South-West</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+		}
+		else if(price_type == "View Facing"){
+			price_sub_type_sqft.innerHTML = "<option value='Swimming Pool View'>Swimming Pool View</option><option value='Garden View'>Garden View</option><option value='Sea View'>Sea View</option><option value='Road View'>Road View</option><option value='River View'>River View</option><option value='Golf View'>Golf View</option><option value='Lake View'>Lake View</option><option value='Temple View'>Temple View</option><option value='Mountain View'>Mountain View</option><option value='-'>Others - Please mention it in description</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+		}
+		else if(price_type == "PLC"){
+			price_sub_type_sqft.innerHTML = "<option value='Corner Flat'>Corner Flat</option><option value='Two Side Open'>Two Side Open</option><option value='Three Side Open'>Three Side Open</option><option value='-'>Others - Please mention it in description</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+				// var elems = document.querySelectorAll(".selectClass");
+				// [].forEach.call(elems, function(el) {
+				//     el.className = el.className.replace(/\hideElement\b/, "");
+				// });
+				// var testarray = document.getElementsByClassName("inputClass");
+				// for(var i = 0; i < testarray.length; i++)
+				// {
+				//     testarray[i].className += "hideElement";
+				// }
+				// var element = document.getElementById(cost_type_id);
+				// $('#'+cost_type_id).addClass('disabledCss');
+				// element.selectedIndex = 1;
+		}
+		else if(price_type == "PLC-Floorrise"){
+			var floors_html = "<option value='Fix Increasing Cost'>Fix Increasing Cost</option><option value='Fix Decreasing Cost'>Fix Decreasing Cost</option>";
+			for (var i = 1; i <= 100; i++) {
+				floors_html += "<option value='"+ i +"'>Floor Number - "+ i +"</option>";
+			}
+			price_sub_type_sqft.innerHTML = floors_html;
+			//price_sub_type_sqft.innerHTML = "<option value='Corner Flat'>Corner Flat</option><option value='Two Side Open'>Two Side Open</option><option value='Three Side Open'>Three Side Open</option><option value='0'>Others - Please mention it in description</option>";
+			price_sub_type.style.visibility = "hidden";
+			price_sub_type_sqft.style.visibility = "visible";
+		}
+		else{
+			// var element = document.getElementById(cost_type_id);
+			// $('#'+cost_type_id).removeClass('disabledCss');
+			// var elems = document.querySelectorAll(".inputClass");
+			// [].forEach.call(elems, function(el) {
+			//     el.className = el.className.replace(/\hideElement\b/, "");
+			// });
+			// var testarray = document.getElementsByClassName("selectClass");
+			// for(var i = 0; i < testarray.length; i++)
+			// {
+			//  	if((testarray[i].className).indexOf('hideElement')==-1){
+			// 		testarray[i].className += "hideElement";
+			//  	}   
+			// }
+			price_sub_type.style.visibility = "visible";
+			price_sub_type_sqft.style.visibility = "hidden";
+			//price_sub_type.className += "hideElement";
+		}
+		
+	}
+
+	$('#myModalCreatePriceSheetComponent').click(function(){
+
+		$('#myModalCreatePriceSheet').modal('show');	
+
+		var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+				        	<span aria-hidden="true">&times;</span>\
+				        </button>\
+				        <h3 align="center">\
+				        	Create A Component\
+				        </h3>\
+				        <form role="form" method="post" action="">\
+				        	<fieldset>\
+						        <div class="table-responsive">\
+							        <table class="table">\
+							                <tr>\
+							                    <th>Price Type</th>\
+							                    <td>\
+							                    	<select name="price_type" class="form-control" id="create_price_type" onchange="change_sub_type(this.form);">\
+							                    		<option value="0">--Select A Price Type--</option>\
+												        <option value="Basic">Basic</option>\
+												        <option value="Parking">Parking</option>\
+												        <option value="Club House">Club House</option>\
+												        <option value="View Facing">View Facing</option>\
+												        <option value="Direction">Direction</option>\
+												        <option value="PLC">PLC</option>\
+												        <option value="PLC-Floorrise">PLC-Floorrise</option>\
+												        <option value="Maintenance Deposit">Maintenance Deposit</option>\
+												        <option value="Others">Others</option>\
+												    </select>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Price Type Description</th>\
+							                    <td>\
+							                    	<textarea class="form-control" name="price-type-free-text" rows="2" placeholder="Enter Price Type Description"></textarea>\
+					                            </td>\
+					                        </tr><tr>\
+							                	<th>Cost Type</th>\
+							                    <td>\
+							                    	<select class="form-control" name="cost_type" type="cost_type" id="create_cost_type">\
+							                    		<option value="Lumpsump">Lumpsump</option>\
+							                    		<option value="Per sqft">Per sqft</option>\
+							                    		<option value="Percentage">Percentage</option>\
+							                    	</select>\
+					                            </td>\
+							                </tr><tr>\
+							                    <th>Price Sub Type</th>\
+							                    <td name="priceSubType">\
+							                    	<div name="create_price_sub_type">\
+					                                	<input class="inputClass form-control "  id="price_sub_type" name="price_sub_type" placeholder="Enter Price Sub Type" type="price_sub_type">\
+					                                	<select name="price_sub_type_sqft" id="price_sub_type_sqft" class="selectClass form-control " style="visibility:hidden">\
+					                                		<option value="0">--Select a Sub Type--</option>\
+													    </select>\
+					                                </div>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Price Sub Type Description</th>\
+							                    <td>\
+							                    	<textarea class="form-control" name="price-sub-type-free-text" rows="2" placeholder="Enter Price Sub Type Description"></textarea>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Amount</th>\
+							                    <td>\
+								                    <input class="form-control" name="amount" type="amount" placeholder="Enter Amount (Rs.)">\
+					                            </td>\
+							                </tr>\
+									</table>\
+								</div>\
+								<div class="col-lg-4 col-lg-offset-4">\
+                                    <input class="btn btn-lg btn-primary btn-block" type="submit" onclick="return validateCreateComponentForm(this.form)" name="price_sheet_component_create" value="Create" />\
+                                </div>\
+							</fieldset>\
+						</form>';
+			$('#createPriceSheet').html(html);
+	});
+
+	$('.editCol').find('#myModalEditPriceSheetComponent').click(function(){
+			$('#myModalEditPriceSheet').modal('show');
+
+			if($(this).data('price-type')=="Basic"){
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" id="price_sub_type" value="" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">\
+				        <option value="Super Builtup Area">Super Builtup Area</option>\
+				        <option value="Builtup Area">Builtup Area</option>\
+				        <option value="Carpet Area">Carpert Area</option>\
+				    </select>';
+			}
+			else if($(this).data('price-type')=="Parking"){
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" value="" id="price_sub_type" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">\
+				        <option value="Open">Open</option><option value="Covered">Covered</option>\
+				    </select>';
+			}
+			else if($(this).data('price-type')=="Direction"){
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" value="" id="price_sub_type" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">\
+				        <option value="East">East</option><option value="West">West</option><option value="North">North</option><option value="South">South</option><option value="North-East">North-East</option><option value="North-West">North-West</option><option value="South-East">South-East</option><option value="South-West">South-West</option>\
+				    </select>';
+			}
+			else if($(this).data('price-type')=="View Facing"){
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" value="" id="price_sub_type" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">\
+				        <option value="Swimming Pool View">Swimming Pool View</option><option value="Garden View">Garden View</option><option value="Sea View">Sea View</option><option value="Road View">Road View</option><option value="River View">River View</option><option value="Golf View">Golf View</option><option value="Lake View">Lake View</option><option value="Temple View">Temple View</option><option value="Mountain View">Mountain View</option><option value="-">Others - Please mention it in description</option>\
+				    </select>';
+			}
+			else if($(this).data('price-type')=="PLC"){
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" value="" id="price_sub_type" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">\
+				        <option value="Corner Flat">Corner Flat</option><option value="Two Side Open">Two Side Open</option><option value="Three Side Open">Three Side Open</option><option value="-">Others - Please mention it in description</option>\
+				    </select>';
+			}
+			else if($(this).data('price-type')=="PLC-Floorrise"){
+				var floors_html = "<option value='Fix Increasing Cost'>Fix Increasing Cost</option><option value='Fix Decreasing Cost'>Fix Decreasing Cost</option>";
+				for (var i = 1; i <= 100; i++) {
+					floors_html += "<option value='"+ i +"'>Floor Number - "+ i +"</option>";
+				}
+				var htmlinputData='<input class="inputClass form-control hideElement" name="price_sub_type" value="" id="price_sub_type" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control " value="'+$(this).data('price-sub-type')+'">'+ floors_html +'\
+				    </select>';
+			}else{
+				var htmlinputData='<input class="inputClass form-control " id="price_sub_type" name="price_sub_type" value="'+$(this).data('price-sub-type')+'" type="price_sub_type">\
+                	<select id="price_sub_type_sqft" name="price_sub_type_sqft" class="selectClass form-control hideElement">\
+				        <option value="0">--Select a Sub Type--</option>\
+				    </select>';
+			}
+
+			var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+				        	<span aria-hidden="true">&times;</span>\
+				        </button>\
+				        <h3 align="center">\
+				        	Edit Component\
+				        </h3>\
+				        <form role="form" method="post" action="">\
+				        	<fieldset>\
+						        <div class="table-responsive">\
+							        <table class="table">\
+							        		<tr>\
+							                    <th>Price Type</th>\
+							                    <td>\
+					                                <select name="price_type" class="form-control" id="price_type_id" onchange="change_sub_type(this.form)">\
+							                    		<option value="0">--Select A Price Type--</option>\
+												        <option value="Basic">Basic</option>\
+												        <option value="Parking">Parking</option>\
+												        <option value="Club House">Club House</option>\
+												        <option value="View Facing">View Facing</option>\
+												        <option value="Direction">Direction</option>\
+												        <option value="PLC">PLC</option>\
+												        <option value="PLC-Floorrise">PLC-Floorrise</option>\
+												        <option value="Maintenance Deposit">Maintenance Deposit</option>\
+												        <option value="Others">Others</option>\
+												    </select>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Price Type Description</th>\
+							                    <td>\
+							                    	<textarea class="form-control" name="price-type-free-text" rows="2">'+$(this).data('price-type-free-text')+'</textarea>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Cost Type</th>\
+							                    <td>\
+							                    	<select class="form-control" name="cost_type" id="cost_type" >\
+							                    		<option value="Lumpsump">Lumpsump</option>\
+							                    		<option value="Per sqft">Per sqft</option>\
+							                    		<option value="Percentage">Percentage</option>\
+							                    	</select>\
+					                            </td>\
+							                </tr><tr>\
+							                    <th>Price Sub Type</th>\
+							                    <td>'+
+					                            htmlinputData+
+					                            '</td>\
+							                </tr><tr>\
+							                	<th>Price Sub Type Description</th>\
+							                    <td>\
+							                    	<textarea class="form-control" name="price-sub-type-free-text" rows="2">'+$(this).data('price-sub-type-free-text')+'</textarea>\
+					                            </td>\
+							                </tr><tr>\
+							                	<th>Amount</th>\
+							                    <td>\
+					                                <input class="form-control" name="amount" type="amount" value="'+$(this).data('amount')+'">\
+					                            </td>\
+							                </tr>\
+									</table>\
+								</div>\
+								<div class="col-lg-4 col-lg-offset-4">\
+									<input class="btn btn-lg btn-primary btn-block" type="submit" onclick="return validateCreateComponentForm(this.form)" name="price_sheet_component_update" value="Update" />\
+                                	<input type="hidden" name="price_sheet_component_id" value="'+$(this).data('component-id')+'" />\
+                                </div>\
+							</fieldset>\
+						</form>';
+
+			$('#editPriceSheet').html(html);
+
+			checkSelectValue($(this).data('cost-type'), $(this).data('price-sub-type'),$(this).data('price-type'));
+	});
+
+	$('.editCol').find('#linkDeletePriceSheetComponent').click(function(){
+        $('#myModalDeletePriceSheetComponent').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to delete this payment plan component?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="price_sheet_component_id" id="price_sheet_component_id" value="'+$(this).data('component-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="price_sheet_component_delete">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+
+        $('#deletePriceSheetComponent').html(html);
+    });
+
+	$('#linkUpdateAllUnits').click(function()
+	{
+		$('#myModalUpdateAllUnits').modal('show');
+
+        var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+                        <span aria-hidden="true">&times;</span>\
+                    </button><br>\
+                    <div align="center">\
+                    <span>\
+                        Are you sure you want to update all units of this project for this price sheet?\
+                    </span><br><br>\
+                    <form role="form" method="post" action="">\
+                        <input type="hidden" name="project_id" id="project_id" value="'+$(this).data('project-id')+'" />\
+                        <input type="hidden" name="price_sheet_id" id="price_sheet_id" value="'+$(this).data('price-sheet-id')+'" />\
+                        <button class="btn btn-default" type="submit" name="update_all_units">Yes</button>\
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">No</button>\
+                    </form></div>';
+
+        $('#updateAllUnits').html(html);
+	});
+
+	//callback function
+	function jsonpcallback(result_json) {
+	    //do stuff with JSON
+		var component_entry = "";
+		for(component_no in result_json.components){
+			component_entry += "<tr>";
+			component_entry +=  "<td>"+result_json.components[component_no].component_price_type+"</td>"; 
+			component_entry +=  "<td>"+ result_json.components[component_no].component_price_sub_type +"</td>"; 
+			if(result_json.components[component_no].cost_type == 'Percentage'){
+				component_entry +=  "<td>"+ result_json.components[component_no].entered_value + "% of Total Sale Value</td>"; 
+			}
+			else if(result_json.components[component_no].cost_type == 'Remain Percentage'){
+				component_entry +=  "<td>"+ result_json.components[component_no].entered_value +"% of Total Sale Value</td>"; 
+			}
+			else{
+				component_entry +=  "<td> Rs. "+ result_json.components[component_no].entered_value +"</td>"; 
+			}
+			
+			component_entry +=  "<td>"+ result_json.components[component_no].cost_type +"</td>";
+		    component_entry +=  "<td> Rs. "+result_json.components[component_no].amount+"</td>";  
+		    component_entry += "</tr>";      	
+		};
+		var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+					<span aria-hidden="true">&times;</span>\
+		    	</button>\
+		    	<h3 align="center">\
+	        	Full Price Sheet:  {{price_sheet_info.name}}\
+		        </h3>\
+		        <div class="table-responsive">\
+					<table class="table">\
+			        	<tr>\
+			        		<th style="float:right">\
+			        			Project Name:\
+			        		</th>\
+			        		<td>\
+			        			{{project.project_name}}\
+			        		</td>\
+			        		<th style="float:right">\
+			        			Builders Name:\
+			        		</th>\
+			        		<td>\
+			        			{{project.builder_name}}\
+			        		</td>\
+			        	</tr>\
+			        	<tr>\
+			        		<th style="float:right">\
+			        			Type:\
+			        		</th>\
+			        		<td>\
+			        			{{project.project_type}}\
+			        		</td>\
+			        		<th style="float:right">\
+			        			Area:\
+			        		</th>\
+			        		<td>\
+			        			{{project.project_area}},{{project.project_city}}\
+			        		</td>\
+			        	</tr>\
+			        </table>\
+			    </div>\
+			    <div class="table-responsive">\
+		            <table class="table table-striped table-bordered table-hover">\
+		                <thead>\
+		                    <tr>\
+		                        <th>Component</th>\
+		                        <th>Sub Component</th>\
+		                        <th>Value</th>\
+		                        <th>Cost Type</th>\
+		                        <th>Sub-Amount</th>\
+		                    </tr>\
+		                </thead>\
+		                <tbody>'+ 
+		                component_entry
+		                +'</tbody>\
+		            </table>\
+		            <div class="col-lg-4 col-lg-offset-8">\
+		            	<table class="table">\
+		            		<tr>\
+		            			<th>Total Sale Value</th>\
+		            			<td> Rs. '+ result_json.total_sale_value +'</td>\
+		            		</tr>\
+		            		<tr>\
+		            			<th>Total Price</th>\
+		            			<td> Rs. '+ result_json.total_price +'</td>\
+		            		</tr>\
+		            	</table>\
+		            </div>\
+		        </div>\
+		    	';
+		$('.modal-body').html(html);
+	    
+	}
+
+	function getFullPriceSheet(){
+		var selectUnit = document.getElementById('selectUnit');
+		unit_id = selectUnit.value;
+		if(unit_id==0)
+		{
+			alert("Please select a unit");
+		}
+		else{
+			var divPriceSheet = document.getElementById('checkPriceSheet');
+			$.ajax({
+				url: "{% url 'unit_project_price_sheet' %}",
+				type:'POST',
+				data:{
+					"unit_id":unit_id,
+					"price_sheet_id":"{{price_sheet_id}}"
+				},
+				success: function(result){
+					result_json = JSON.parse(result);
+					console.log(result_json);
+					var component_entry = "";
+					for(component_no in result_json.components){
+						if(result_json.components[component_no].amount != '0')
+						{
+							component_entry += "<tr>";
+							component_entry +=  "<td>"+result_json.components[component_no].component_price_type+"</td>"; 
+							component_entry +=  "<td>"+ result_json.components[component_no].component_price_sub_type +"</td>";
+						    component_entry +=  "<td> Rs. "+result_json.components[component_no].amount+"</td>";  
+						    component_entry += "</tr>";
+						}
+					};
+					var html ='<div class="table-responsive">\
+					            <table class="table table-striped table-bordered table-hover">\
+					                <thead>\
+					                    <tr>\
+					                        <th>Component</th>\
+					                        <th>Sub Component</th>\
+					                        <th>Amount</th>\
+					                    </tr>\
+					                </thead>\
+					                <tbody>'+ 
+					                component_entry
+					                +'</tbody>\
+					            </table>\
+					            <div class="col-lg-4 col-lg-offset-8">\
+					            	<table class="table">\
+					            		<tr>\
+					            			<th>Total Sale Value</th>\
+					            			<td> Rs. '+ result_json.total_sale_value +'</td>\
+					            		</tr>\
+					            	</table>\
+					            </div>\
+					        </div>\
+					    	';
+
+					divPriceSheet.innerHTML = html;
+					
+				},
+				error:function(result){
+					console.log(result);
+					var html ='<div">There is no price sheet exist for this unit.</div>';
+					divPriceSheet.innerHTML = html;
+				}
+			});
+		}
+
+	}
+
+	$('#myModalViewFullPriceSheet').click(function(){
+		$('#myModalFullPriceSheet').modal('show');
+		$.ajax({
+			url: "{% url 'get_project_units' %}", 
+			type:'GET',
+			data:{
+				"project_id":"{{price_sheet_info.project_id}}",
+				"project_type_id":"{{price_sheet_info.project_type_id}}",
+				"tower_id":"{{price_sheet_info.tower_id}}",
+				"unit_variant_id":"{{price_sheet_info.unit_variant_id}}"
+			},
+			success: function(result){
+				result_json = JSON.parse(result);
+				//console.log(result_json);
+				var select_units_html = "<option value='0'>--Select a Unit--</option>";
+				for(serial_number in result_json){
+					select_units_html += '<option value="'+ result_json[serial_number].unit_id +'">' + result_json[serial_number].unit_name + '</option>';
+				}
+				var html ='<button type="button" class="close" data-dismiss="modal" aria-label="Close">\
+							<span aria-hidden="true">&times;</span>\
+				    	</button>\
+				    	<h3 align="center">\
+			        	Final Price Sheet: {{price_sheet_info.name}}\
+				        </h3>\
+				        <div class="table-responsive">\
+							<table class="table">\
+					        	<tr>\
+					        		<th style="float:right">\
+					        			Project Name:\
+					        		</th>\
+					        		<td>\
+					        			{{project.project_name}}\
+					        		</td>\
+					        		<th style="float:right">\
+					        			Select Unit:\
+					        		</th>\
+					        		<td>\
+					        			<select class="form-control" id="selectUnit" onchange="getFullPriceSheet()">' + select_units_html + '</select>\
+					        		</td>\
+					        	</tr>\
+					        </table>\
+					    </div>\
+					    <div id="checkPriceSheet"></div>\
+				    	';
+				$('#checkFullPriceSheet').html(html);
+			},
+			error:function(result){
+				alert(result);
+
+			}
+		});
+	});
+
+</script>
+
+<div class="modal fade PriceSheet" id="myModalEditPriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 500px; margin-top:50px;">
+    <div class="modal-content">
+      <div id="editPriceSheet" class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PriceSheet" id="myModalCreatePriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 500px; margin-top:50px;">
+    <div class="modal-content">
+      <div id="createPriceSheet" class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade PriceSheet" id="myModalDeletePriceSheetComponent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px;">
+    <div class="modal-content">
+      <div id="deletePriceSheetComponent" class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PriceSheet" id="myModalFullPriceSheet" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div id="checkFullPriceSheet" class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade PaymentPlan" id="myModalUpdateAllUnits" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 400px; margin-top:250px;">
+    <div class="modal-content">
+      <div id="updateAllUnits" class="modal-body">
+      	
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

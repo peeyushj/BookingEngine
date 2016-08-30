@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block extrajs %}
+
+<!-- Countdown Timer -->
+<script src="{% static "bower_components/jquery.countdown/dist/jquery.countdown.min.js" %}"></script>
+<script type="text/javascript" src="{% static "bower_components/jquery.countdown/dist/jquery.countdown.js" %}"></script>
+
+<script type="text/javascript">
+  $('[data-countdown]').each(function() {
+    var $this = $(this), finalDate = $(this).data('countdown');
+    $this.countdown(finalDate, function(event) {
+      if(event.offset.days>0)
+        $this.html(event.strftime('%D days ') + 'left');
+      else if(event.offset.hours>0)
+        $this.html(event.strftime('%H hours ') + 'left');
+      else if(event.offset.minutes>0)
+        $this.html(event.strftime('%M minutes ') + 'left');
+      else
+        $this.html('Deal is over');
+    });
+  });
+</script>
+
+{% endblock extrajs %}
+{% block content %}
+
+<div id="page-wrapper">	
+
+  {% if not request.session.user_id %} 
+
+  <div class="jumbotron">
+    <div class="logomain ">
+      <!-- <img src="{% static "images/DealSmart-banner.png" %}"> -->
+      <img src="{% static "images/muchadlogob.png" %}">
+      <div class="clearfix">
+        &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+
+      </div>
+      <h2>DealSmart is a platform where agents collaborate to bring best deals for their clients.</h2>
+      
+      
+      <a class="btn  btn-social btn-facebook" href="/login/facebook/?next={{request.path}}">
+        &nbsp;
+      </a>
+      <h3>Or check <a href="#" data-toggle="modal" data-target="#myModalWorks" class="worksmodal">How it Works</a></h3>
+      
+    </div>
+  </div>
+   <div class="bldg-bkgnd clearfix">
+      &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+   </div>
+
+  {% else %}
+  <div class="jumbotron inner mini">
+    <div class="container ">
+      <h2>Welcome to DealSmart.<br/>
+      <small>Have an awesome deal? <a href="/add-deal">pitch it here</a>. Or join some of the hottest deals here. <br/>
+      Confused? See <a href="#" data-toggle="modal" data-target="#myModalWorks" >how it works</a> or read answers to <a href="/faq">frequently asked questions.</a>
+      </small></h2>
+    </div>
+  </div>
+
+  {% endif %}
+
+<div class="modal fade howitworks" id="myModalWorks" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="sliderClass" id="slider1_container" style=" position: relative; height: 525px; overflow: hidden;">
+
+          <p><img u="image" src="{% static "images/dealsmartworks.png"%}" alt="How It Works"></p>
+        </div>
+        <button type="button" class="close " data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+  {% if hot_deals %}
+  <div class="container">
+    <div class="row">
+      <div class="txtalcent">
+        <h1 >Hot Deals</h1>
+      </div>
+      {% for hot_deal in hot_deals %}
+      <div class="col-sm-6 col-md-4">
+        <div class="thumbnail">
+          <figure>
+            <a href="{% url 'deal_detail' hot_deal.offer_id %}">
+              <img class="lazy" data-original="{{ hot_deal.deal_image_path }}" src="{% static "images/no-image-available.jpg" %}" border="0" style="width:100%" alt="{{ hot_deal.offer_title }}"/>
+              <!-- <img src="{{ hot_deal.deal_image_path }}" style="width:100%"/> -->
+            </a>
+            <figcaption><div data-countdown="{{ hot_deal.offer_end_time }}"></div></figcaption>
+          </figure>
+          <!--<img src="{{ hot_deal.deal_image_path }}" alt="">-->
+          <div class="caption">
+            <h4 class="pull-right">
+              {{ hot_deal.offer_discount }}% Off
+            </h4>
+            <h4><a href="{% url 'deal_detail' hot_deal.offer_id %}">
+              {{hot_deal.offer_title}}</a><br/>	                          
+              <small>{{ hot_deal.deal_property_area }}, {{ hot_deal.deal_property_city }} </small></h4>
+              <div class="text-muted">
+                <span class="pull-left">{{ hot_deal.enrolled_no_of_users }} bought / {{ hot_deal.required_total_users }} total</span>
+                <span class="pull-right">&nbsp;{% widthratio hot_deal.enrolled_no_of_users hot_deal.required_total_users 100 %}% Complete</span>
+              </div>
+              <div class="progress progress-striped active" style="width:100%">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{% widthratio hot_deal.enrolled_no_of_users hot_deal.required_total_users 100 %}" aria-valuemin="0" aria-valuemax="100" style="width: {% widthratio hot_deal.enrolled_no_of_users hot_deal.required_total_users 100 %}%">
+                  <span class="sr-only">{% widthratio hot_deal.enrolled_no_of_users hot_deal.required_total_users 100 %}% Complete (success)</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+
+{% endblock %}
+</div>

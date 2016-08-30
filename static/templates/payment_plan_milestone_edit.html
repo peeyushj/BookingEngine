@@ -1,0 +1,45 @@
+<div class="modal fade PaymentPlan" id="myModalEditPaymentPlanMilestone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none;">
+  <div class="modal-dialog" style="width: 800px;">
+    <div class="modal-content">
+      <div class="modal-body">
+      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        	<span aria-hidden="true">&times;</span>
+        </button>
+        <h3>
+        	{{payment_plan_milestone.payment_plan_milestone_id}}
+        	{{payment_plan_info.payment_plan_name}}
+        	{% if payment_plan_info.payment_plan_description %}
+        		<span style="font-size:14px">: {{payment_plan_info.payment_plan_description}}</span>
+        	{% endif %}
+        </h3><hr>
+        <div class="table-responsive">
+	        <table class="table">
+	            <thead>
+	                <tr>
+	                    <th>Milestones Type</th>
+	                    <th>Description</th>
+	                    <th>Cost Type</th>
+	                    <th>Amount</th>
+	                    <th>Due Date</th>
+	                </tr>
+	            </thead>
+	            <tbody>
+			        {% for payment_plan_milestone in payment_plan_milestone_info %}
+			        <tr>
+			            <th>{{ payment_plan_milestone.milestone }}</th>
+			            <td>{{ payment_plan_milestone.milestone_free_text }}</td>
+			            <td>{{ payment_plan_milestone.cost_type }}</td>
+			            <td>{{ payment_plan_milestone.amount }}</td>
+			            <td>{{ payment_plan_milestone.milestone_date }}</td>
+			        </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
+		</div>
+        
+        
+      </div>
+
+    </div>
+  </div>
+</div>
